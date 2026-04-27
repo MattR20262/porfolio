@@ -109,44 +109,22 @@ export default function ContentPage() {
   }
 
   async function resetToDefaults() {
-    if (!confirm("Reset all core content to Matt's defaults? This will overwrite name, contact info, SEO and hero text.")) return;
+    if (!confirm("Reset ALL content to defaults? This seeds every field with Matt's starter content.")) return;
     setSaving("reset");
-    const defaults: Record<string, string> = {
-      seo_title:          "Rift Photography — Matt | Perth, WA",
-      seo_description:    "Perth-based event, wedding and commercial photographer. Candid, film-inspired, available worldwide.",
-      hero_eyebrow:       "Film & Digital Photographer · Perth, WA · Available Worldwide",
-      hero_title:         "Real Moments. Timeless Frames.",
-      hero_subtitle:      "Event, wedding and commercial photography shot on digital and film. Perth-based, candid-first, available everywhere.",
-      hero_cta_primary:   "View Portfolio",
-      hero_cta_secondary: "Book Now",
-      brand_statement:    "I don't pose people. I read the room and catch what's already there.",
-      about_name:           "Matt",
-      about_tagline:        "Film & Digital Photographer · Perth, WA",
-      about_bio_1:          "Based in Perth, Western Australia, Matt started Rift Photography with a camera at a house party and an instinct for real moments. What began as a side project during an engineering degree became one of Perth's most in-demand photography studios — built entirely on word of mouth.",
-      about_bio_2:          "His work blends digital precision with a film photographer's eye — warm, candid, and consistent. Whether it's a 21st in the backyard or a Louis Vuitton campaign, the approach doesn't change: show up, read the room, get the shot.",
-      about_stat_1_number:  "500+",
-      about_stat_1_label:   "Events/Year",
-      about_stat_2_number:  "200+",
-      about_stat_2_label:   "★ Reviews",
-      about_stat_3_number:  "6+",
-      about_stat_3_label:   "Years",
-      about_brands:         "Toyota, Disney, Louis Vuitton, Mecca, Channel 9",
-      contact_email:        "matt@riftphotography.com.au",
-      contact_phone:      "+61 4XX XXX XXX",
-      contact_location:   "Perth, Western Australia — Available Worldwide",
-      social_instagram:   "https://instagram.com/riftphotography",
-    };
-    const res = await fetch("/api/content", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(defaults),
-    });
+    // Use the seed-content API which has the full authoritative list of defaults
+    const res = await fetch("/api/seed-content", { method: "POST" });
     if (!res.ok) {
       toast.error("Reset failed");
-    } else {
-      setContent((prev) => ({ ...prev, ...defaults }));
-      toast.success("Reset to Matt's defaults ✓");
+      setSaving(null);
+      return;
     }
+    // Reload content from DB so editor reflects what was just seeded
+    const supabase = createClient();
+    const { data } = await supabase.from("site_content").select("*");
+    const map: Record<string, string> = {};
+    data?.forEach((item: SiteContent) => { map[item.key] = item.value; });
+    setContent(map);
+    toast.success("All content seeded with defaults ✓");
     setSaving(null);
   }
 
