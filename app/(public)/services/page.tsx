@@ -76,12 +76,12 @@ export default async function ServicesPage() {
     .select("key, value")
     .in("key", [
       "services_hero",
-      "service_01_title", "service_01_tagline", "service_01_price", "service_01_desc",
-      "service_02_title", "service_02_tagline", "service_02_price", "service_02_desc",
-      "service_03_title", "service_03_tagline", "service_03_price", "service_03_desc",
-      "service_04_title", "service_04_tagline", "service_04_price", "service_04_desc",
-      "service_05_title", "service_05_tagline", "service_05_price", "service_05_desc",
-      "service_06_title", "service_06_tagline", "service_06_price", "service_06_desc",
+      "service_01_title", "service_01_tagline", "service_01_price", "service_01_desc", "service_01_includes",
+      "service_02_title", "service_02_tagline", "service_02_price", "service_02_desc", "service_02_includes",
+      "service_03_title", "service_03_tagline", "service_03_price", "service_03_desc", "service_03_includes",
+      "service_04_title", "service_04_tagline", "service_04_price", "service_04_desc", "service_04_includes",
+      "service_05_title", "service_05_tagline", "service_05_price", "service_05_desc", "service_05_includes",
+      "service_06_title", "service_06_tagline", "service_06_price", "service_06_desc", "service_06_includes",
     ]);
 
   const content: Record<string, string> = {};
@@ -89,12 +89,17 @@ export default async function ServicesPage() {
 
   const services = defaultServices.map((svc) => {
     const n = svc.id;
+    const rawIncludes = content[`service_${n}_includes`];
+    const includes = rawIncludes
+      ? rawIncludes.split("\n").map((l) => l.trim()).filter(Boolean)
+      : svc.includes;
     return {
       ...svc,
       title:   content[`service_${n}_title`]   || svc.title,
       tagline: content[`service_${n}_tagline`] || svc.tagline,
       price:   content[`service_${n}_price`]   || svc.price,
       desc:    content[`service_${n}_desc`]    || svc.desc,
+      includes,
     };
   });
 

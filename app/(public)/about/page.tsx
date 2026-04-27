@@ -60,7 +60,13 @@ export default async function AboutPage() {
   const { data: contentRows } = await supabase
     .from("site_content")
     .select("key, value")
-    .in("key", ["about_name", "about_tagline", "about_bio_1", "about_bio_2", "about_portrait"]);
+    .in("key", [
+      "about_name", "about_tagline", "about_bio_1", "about_bio_2", "about_portrait",
+      "about_stat_1_number", "about_stat_1_label",
+      "about_stat_2_number", "about_stat_2_label",
+      "about_stat_3_number", "about_stat_3_label",
+      "about_brands",
+    ]);
 
   const content: Record<string, string> = {};
   contentRows?.forEach((row) => { content[row.key] = row.value; });
@@ -69,6 +75,15 @@ export default async function AboutPage() {
   const aboutTagline = content.about_tagline || "Film & Digital Photographer · Perth, WA";
   const bio1         = content.about_bio_1   || "Based in Perth, Western Australia, Matt started Rift Photography with a camera at a house party and an instinct for real moments. What began as a side project during an engineering degree became one of Perth's most in-demand photography studios — built entirely on word of mouth.";
   const bio2         = content.about_bio_2   || "His work blends digital precision with a film photographer's eye — warm, candid, and consistent. Whether it's a 21st in the backyard or a Louis Vuitton campaign, the approach doesn't change: show up, read the room, get the shot.";
+
+  const stats = [
+    { n: content.about_stat_1_number || "500+", l: content.about_stat_1_label || "Events/Year" },
+    { n: content.about_stat_2_number || "200+", l: content.about_stat_2_label || "★ Reviews" },
+    { n: content.about_stat_3_number || "6+",   l: content.about_stat_3_label || "Years" },
+  ];
+
+  const brands = (content.about_brands || "Toyota, Disney, Louis Vuitton, Mecca, Channel 9")
+    .split(",").map((b) => b.trim()).filter(Boolean);
 
   const nameParts = aboutName.trim().split(" ");
   const nameFirst = nameParts.slice(0, -1).join(" ") || aboutName;
@@ -149,7 +164,7 @@ export default async function AboutPage() {
                 {aboutTagline}
               </p>
               <div className="stat-strip" style={{ display: "flex", gap: "2rem" }}>
-                {[{ n: "500+", l: "Events/Year" }, { n: "200+", l: "★ Reviews" }, { n: "6+", l: "Years" }].map((s) => (
+                {stats.map((s) => (
                   <div key={s.l}>
                     <p style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif", fontSize: "2rem", fontWeight: 300, color: "#c8924a" }}>
                       {s.n}
@@ -228,7 +243,7 @@ export default async function AboutPage() {
           className="brand-strip"
           style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "3rem", flexWrap: "wrap" }}
         >
-          {["Toyota", "Disney", "Louis Vuitton", "Mecca", "Channel 9"].map((brand) => (
+          {brands.map((brand) => (
             <p
               key={brand}
               style={{
