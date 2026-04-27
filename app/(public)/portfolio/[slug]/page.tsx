@@ -197,18 +197,22 @@ export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createClient();
 
-  const [{ data: project }, { data: media }] = await Promise.all([
-    supabase
-      .from("projects")
-      .select("*")
-      .eq("slug", slug)
-      .eq("published", true)
-      .single(),
-    supabase
-      .from("project_media")
-      .select("*")
-      .order("sort_order", { ascending: true }),
-  ]);
+  // First fetch the project so we have the ID to filter media
+  const { data: project } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("slug", slug)
+    .eq("published", true)
+    .single();
+
+  // Only fetch media for this specific project (not the whole table)
+  const { data: media } = project
+    ? await supabase
+        .from("project_media")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("sort_order", { ascending: true })
+    : { data: null };
 
   // ── Fallback: use demo data if the DB hasn't been seeded yet ──────────────
   const demo = DEMO_PROJECTS[slug];
@@ -235,10 +239,7 @@ export default async function ProjectPage({ params }: PageProps) {
   } else {
     // Real DB project: cover first, then gallery images (deduped)
     if (cover_image) allImages.push({ url: cover_image, alt: title });
-    const projectMedia = (media ?? []).filter(
-      (m: { project_id: string }) => m.project_id === project!.id
-    );
-    for (const item of projectMedia) {
+    for (const item of (media ?? [])) {
       if (item.media_type === "image" && item.url !== cover_image) {
         allImages.push({ url: item.url, alt: item.alt_text || title });
       }

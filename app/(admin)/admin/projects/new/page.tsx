@@ -55,8 +55,10 @@ export default function NewProjectPage() {
       return;
     }
 
-    toast.success("Project created");
-    router.push("/admin/projects");
+    const created = await res.json();
+    toast.success("Project created — now add your photos");
+    // Go straight to edit so photos can be added immediately
+    router.push(`/admin/projects/${created.id}/edit`);
   }
 
   return (
