@@ -44,12 +44,6 @@ const CATEGORIES = [
   { label: "Pre-Ball",   slug: "preball",    desc: "Formals, debs & group shoots" },
 ];
 
-// Fallback featured work shown when no DB projects exist yet
-const DEMO_FEATURED = [
-  { id: "d1", title: "NYE Gala — Crown Perth",         slug: "nye-gala-crown-perth",       category: "Events",     cover_image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=75" },
-  { id: "d2", title: "Garden Wedding — Swan Valley",   slug: "garden-wedding-swan-valley", category: "Weddings",   cover_image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=75" },
-  { id: "d3", title: "Toyota — Brand Campaign",        slug: "toyota-brand-campaign",      category: "Commercial", cover_image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=75" },
-];
 
 /* ─── Scroll math helpers ─────────────────────────────────────────── */
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
@@ -319,7 +313,7 @@ export default function HomePageScroll({
             </h2>
             {(() => {
               // Use real DB projects, fall back to demo cards so the scene is never empty
-              const display = projects.length > 0 ? projects.slice(0, 3) : DEMO_FEATURED;
+              const display = projects.slice(0, 3);
               return (
                 <>
                   <div className="hs-work-grid">
