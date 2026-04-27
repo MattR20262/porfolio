@@ -6,7 +6,7 @@ import AdminHeader from "@/components/layout/AdminHeader";
 import toast from "react-hot-toast";
 import { slugify } from "@/lib/utils";
 
-const categories = ["weddings", "fashion", "portraits", "events", "destinations", "street", "commercial"];
+const categories = ["events", "weddings", "commercial", "corporate", "portraits", "preball"];
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -143,12 +143,12 @@ export default function NewProjectPage() {
 
             <div style={{ display: "flex", gap: "2rem" }}>
               <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer" }}>
-                <input id="published" name="published" type="checkbox" />
+                <input id="published" name="published" type="checkbox" defaultChecked />
                 <span className="form-label" style={{ marginBottom: 0 }}>Published</span>
               </label>
               <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer" }}>
                 <input id="featured" name="featured" type="checkbox" />
-                <span className="form-label" style={{ marginBottom: 0 }}>Featured</span>
+                <span className="form-label" style={{ marginBottom: 0 }}>Featured (shows on homepage)</span>
               </label>
             </div>
 

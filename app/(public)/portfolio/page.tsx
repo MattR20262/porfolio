@@ -47,10 +47,25 @@ function PortfolioContent() {
   const [dbProjects,     setDbProjects]     = useState<DisplayProject[]>([]);
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [loading,        setLoading]        = useState(true);
-  const [seeding,        setSeeding]        = useState(false);
+  const [seeding,        setSeeding]        = useState(false); // used inside load()
 
   async function load() {
     const supabase = createClient();
+
+    // Check TOTAL project count (published + drafts) to decide whether to seed
+    const { count: totalCount } = await supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true });
+
+    // Only auto-seed demo projects if the DB is completely empty
+    if ((totalCount ?? 0) === 0 && !seeding) {
+      setSeeding(true);
+      try {
+        await fetch("/api/seed-projects", { method: "POST" });
+      } catch { /* silent */ }
+      setSeeding(false);
+    }
+
     const { data } = await supabase
       .from("projects")
       .select("*")
@@ -61,19 +76,6 @@ function PortfolioContent() {
   }
 
   useEffect(() => { load(); }, []);
-
-  // Seed once on first visit if the DB is still empty
-  useEffect(() => {
-    if (!loading && dbProjects.length === 0 && !seeding) {
-      setSeeding(true);
-      fetch("/api/seed-projects", { method: "POST" })
-        .then((r) => r.json())
-        .then(() => load())
-        .catch(() => {/* silent — demo images still show */})
-        .finally(() => setSeeding(false));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
 
   // Always have something to show — real DB projects, or demo cards while seeding
   const projects = dbProjects.length > 0 ? dbProjects : DEMO_PROJECTS;

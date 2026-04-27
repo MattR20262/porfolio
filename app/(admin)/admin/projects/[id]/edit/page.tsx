@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { Upload, Trash2, ImageIcon, Images } from "lucide-react";
 import type { Project, ProjectMedia, MediaAsset } from "@/types";
 
-const categories = ["weddings", "fashion", "portraits", "events", "destinations", "street", "commercial"];
+const categories = ["events", "weddings", "commercial", "corporate", "portraits", "preball"];
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
