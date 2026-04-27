@@ -88,9 +88,20 @@ export default function ContentPage() {
     async function load() {
       const supabase = createClient();
       const { data } = await supabase.from("site_content").select("*");
-      const map: Record<string, string> = {};
-      data?.forEach((item: SiteContent) => { map[item.key] = item.value; });
-      setContent(map);
+
+      // Auto-seed all defaults if the DB is empty (first run)
+      if (!data || data.length === 0) {
+        await fetch("/api/seed-content", { method: "POST" });
+        const { data: seeded } = await supabase.from("site_content").select("*");
+        const map: Record<string, string> = {};
+        seeded?.forEach((item: SiteContent) => { map[item.key] = item.value; });
+        setContent(map);
+      } else {
+        const map: Record<string, string> = {};
+        data.forEach((item: SiteContent) => { map[item.key] = item.value; });
+        setContent(map);
+      }
+
       setLoading(false);
     }
     load();
